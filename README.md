@@ -20,6 +20,27 @@ python3 class2java.py dir
 
 generate database for java source code
 
+```text
+usage: run.py [-h] [-l [LIB ...]] [-ld [LIBDIR ...]] db srcroot
+
+CodeQL java extractor.
+
+positional arguments:
+  db                    codeql database name
+  srcroot               java source code dir
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -l [LIB ...], --lib [LIB ...]
+                        lib path
+  -ld [LIBDIR ...], --libdir [LIBDIR ...]
+                        lib dir
+```
+
+example
+
 ```bash
-python3 run.py dbname javaSourceDir
+python3 run.py dbname srcroot
+python3 run.py dbname srcroot -l lib1.jar lib2.jar
+python3 run.py dbname srcroot -ld libdir1 libdir2
 ```

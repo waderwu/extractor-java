@@ -3,11 +3,20 @@ import os
 import sys
 import subprocess
 import glob
+import argparse
+
 
 class Extract:
-    def __init__(self, db, srcroot):
+    def __init__(self, db, srcroot, lib, libdir):
         self.dbname = db
         self.srcroot = srcroot
+        if lib:
+            self.libs = lib
+        else:
+            self.libs = []
+        for _dir in libdir:
+            for lib in glob.glob(f"{_dir}/**/*.jar", recursive=True):
+                self.libs.append(lib)
     
     def init_database(self):
         p = subprocess.run(["codeql", "database", "init", self.dbname,  "-l",  "java", "--source-root", self.srcroot])
@@ -44,6 +53,13 @@ class Extract:
         print(len(javafiles))
         with open(f"{self.dbpath}/log/javac.args", "w") as f:
             f.write("-Xprefer:source" + "\n")
+            if len(self.libs) > 0:
+                f.write("-classpath\n")
+                libstr = ""
+                for lib in self.libs:
+                    libstr = libstr + lib + ":"
+                f.write(libstr + "\n")
+            
             for javafile in javafiles:
                 #if "test" not in javafile:
                 f.write(javafile + "\n")
@@ -68,5 +84,21 @@ class Extract:
 
 
 if __name__ == "__main__":
-    extractor = Extract(sys.argv[1], sys.argv[2])
+    parser = argparse.ArgumentParser(description='CodeQL java extractor.')
+    parser.add_argument('db', help='codeql database name')
+    parser.add_argument('srcroot', help='java source code dir')
+    parser.add_argument('-l', '--lib', nargs='*', help='lib path')
+    parser.add_argument('-ld', '--libdir', nargs='*', help='lib dir')
+
+    if len(sys.argv) < 2:
+        parser.print_help()
+        sys.exit()
+    
+    args = parser.parse_args()
+    print(args)
+    print(args.db)
+    print(args.srcroot)
+    print(args.lib)
+    print(args.libdir)
+    extractor = Extract(args.db, args.srcroot, args.lib, args.libdir)
     extractor.run()
