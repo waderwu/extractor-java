@@ -14,9 +14,10 @@ class Extract:
             self.libs = lib
         else:
             self.libs = []
-        for _dir in libdir:
-            for lib in glob.glob(f"{_dir}/**/*.jar", recursive=True):
-                self.libs.append(lib)
+        if libdir:
+            for _dir in libdir:
+                for lib in glob.glob(f"{_dir}/**/*.jar", recursive=True):
+                    self.libs.append(lib)
     
     def init_database(self):
         p = subprocess.run(["codeql", "database", "init", self.dbname,  "-l",  "java", "--source-root", self.srcroot])
