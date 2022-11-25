@@ -33,7 +33,12 @@ class Extract:
         self.codeql_home = codeql_home
         print(f"[*extract_log*] codeql_home : {codeql_home}")
         s = platform.system().lower()
-        s = 'osx' if s == 'darwin' else s
+        MAPPING = {'darwin': 'osx',
+                   'windows': 'win',
+                   'linux': 'linux'
+                   }
+        if s in MAPPING:
+            s = MAPPING.get(s)
         # print(f"{codeql_home}/tools/{s}*/java")
         codeql_java_home = glob.glob(f"{codeql_home}/tools/{s}*/java")[0]
         self.codeql_java_home = codeql_java_home
